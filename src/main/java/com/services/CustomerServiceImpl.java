@@ -2,6 +2,7 @@ package com.services;
 
 import com.api.v1.mapper.CustomerMapper;
 import com.api.v1.model.CustomerDTO;
+import com.domain.Customer;
 import com.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
 
@@ -36,5 +37,16 @@ public class CustomerServiceImpl implements CustomerService {
         return customerRepository.findById(id)
                 .map(customerMapper::customerToCustomerDTO)
                 .orElseThrow(RuntimeException::new);
+    }
+
+    @Override
+    public CustomerDTO createNewCustomer(CustomerDTO customerDTO) {
+
+        Customer customer = customerMapper.customerDTOtoCustomer(customerDTO);
+        Customer savedCustomer = customerRepository.save(customer);
+        CustomerDTO returnDto = customerMapper.customerToCustomerDTO(savedCustomer);
+        returnDto.setCustomerUrl("/api/v1/customer/" + savedCustomer.getId());
+
+        return returnDto;
     }
 }
